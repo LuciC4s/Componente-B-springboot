@@ -1,4 +1,4 @@
-package com.umg.lrperezc.facturas;
+package com.umg.lrperezc.model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,3 +27,4 @@ public class FacturaItem {
     @Column(nullable = false, precision = 18, scale = 2)
     private BigDecimal price;
 }
+

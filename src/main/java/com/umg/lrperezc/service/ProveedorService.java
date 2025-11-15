@@ -1,7 +1,9 @@
-package com.umg.lrperezc.proveedores;
+package com.umg.lrperezc.service;
 
-import com.umg.lrperezc.proveedores.dto.CreateProveedorDTO;
-import com.umg.lrperezc.proveedores.dto.ProveedorDTO;
+import com.umg.lrperezc.dto.CreateProveedorDTO;
+import com.umg.lrperezc.dto.ProveedorDTO;
+import com.umg.lrperezc.model.Proveedor;
+import com.umg.lrperezc.repository.ProveedorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,3 +48,4 @@ public class ProveedorService {
                 .build();
     }
 }
+

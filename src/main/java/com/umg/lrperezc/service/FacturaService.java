@@ -1,10 +1,12 @@
-package com.umg.lrperezc.facturas;
+package com.umg.lrperezc.service;
 
-import com.umg.lrperezc.facturas.dto.CreateFacturaDTO;
-import com.umg.lrperezc.facturas.dto.FacturaResponseDTO;
-import com.umg.lrperezc.facturas.dto.ItemDTO;
-import com.umg.lrperezc.proveedores.Proveedor;
-import com.umg.lrperezc.proveedores.ProveedorService;
+import com.umg.lrperezc.dto.CreateFacturaDTO;
+import com.umg.lrperezc.dto.FacturaResponseDTO;
+import com.umg.lrperezc.dto.ItemDTO;
+import com.umg.lrperezc.model.Factura;
+import com.umg.lrperezc.model.FacturaItem;
+import com.umg.lrperezc.model.Proveedor;
+import com.umg.lrperezc.repository.FacturaRepository;
 import com.umg.lrperezc.util.ComponentAClient;
 import com.umg.lrperezc.OperacionesNegocio;
 import lombok.RequiredArgsConstructor;
@@ -73,6 +75,13 @@ public class FacturaService {
     }
 
     @Transactional(readOnly = true)
+    public List<FacturaResponseDTO> listarFacturas(){
+        return facturaRepository.findAll().stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public FacturaResponseDTO obtenerFactura(Long id){
         Factura factura = facturaRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Factura con id "+id+" no encontrada"));
@@ -108,3 +117,4 @@ public class FacturaService {
                 .build();
     }
 }
+

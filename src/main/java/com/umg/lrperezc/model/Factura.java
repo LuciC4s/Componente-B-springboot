@@ -1,6 +1,5 @@
-package com.umg.lrperezc.facturas;
+package com.umg.lrperezc.model;
 
-import com.umg.lrperezc.proveedores.Proveedor;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -49,3 +48,4 @@ public class Factura {
         this.items.add(item);
     }
 }
+

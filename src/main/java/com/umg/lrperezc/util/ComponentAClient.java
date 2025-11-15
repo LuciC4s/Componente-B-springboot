@@ -1,6 +1,6 @@
 package com.umg.lrperezc.util;
 
-import com.umg.lrperezc.facturas.dto.ItemDTO;
+import com.umg.lrperezc.dto.ItemDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

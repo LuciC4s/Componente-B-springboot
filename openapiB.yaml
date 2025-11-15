@@ -1,0 +1,319 @@
+openapi: 3.0.3
+info:
+  title: Componente B API
+  description: API REST para gestión de facturas y proveedores - Componente B del sistema de logística
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+
+servers:
+  - url: http://localhost:8081
+    description: Servidor de desarrollo
+
+tags:
+  - name: Facturas
+    description: Operaciones relacionadas con la gestión de facturas
+  - name: Proveedores
+    description: Operaciones relacionadas con la gestión de proveedores
+
+paths:
+  /facturas:
+    get:
+      tags:
+        - Facturas
+      summary: Listar todas las facturas
+      description: Obtiene una lista de todas las facturas registradas en el sistema
+      operationId: listarFacturas
+      responses:
+        '200':
+          description: Lista de facturas obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FacturaResponse'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      tags:
+        - Facturas
+      summary: Crear una nueva factura
+      description: Registra una nueva factura con los items proporcionados. Opcionalmente puede incluir items pendientes del Componente A.
+      operationId: crearFactura
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFacturaRequest'
+      responses:
+        '201':
+          description: Factura creada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacturaResponse'
+        '400':
+          description: Error de validación o datos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /facturas/{id}:
+    get:
+      tags:
+        - Facturas
+      summary: Obtener una factura por ID
+      description: Obtiene los detalles de una factura específica mediante su ID
+      operationId: obtenerFactura
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de la factura
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Factura encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacturaResponse'
+        '404':
+          description: Factura no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /proveedores:
+    get:
+      tags:
+        - Proveedores
+      summary: Listar todos los proveedores
+      description: Obtiene una lista de todos los proveedores registrados en el sistema
+      operationId: listarProveedores
+      responses:
+        '200':
+          description: Lista de proveedores obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProveedorResponse'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      tags:
+        - Proveedores
+      summary: Crear un nuevo proveedor
+      description: Registra un nuevo proveedor en el sistema. El email debe ser único si se proporciona.
+      operationId: crearProveedor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProveedorRequest'
+      responses:
+        '201':
+          description: Proveedor creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProveedorResponse'
+        '400':
+          description: Error de validación o email ya en uso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    CreateFacturaRequest:
+      type: object
+      required:
+        - clientId
+        - proveedorId
+        - items
+      properties:
+        clientId:
+          type: integer
+          format: int64
+          description: ID del cliente
+          example: 1
+          minimum: 1
+        proveedorId:
+          type: integer
+          format: int64
+          description: ID del proveedor
+          example: 1
+          minimum: 1
+        notes:
+          type: string
+          description: Notas adicionales de la factura
+          example: Factura de prueba
+        incluirPendientesDeComponenteA:
+          type: boolean
+          description: Indica si se deben incluir items pendientes del Componente A
+          example: false
+          default: false
+        items:
+          type: array
+          description: Lista de items de la factura
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/Item'
+
+    FacturaResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID de la factura
+          example: 1
+        clientId:
+          type: integer
+          format: int64
+          description: ID del cliente
+          example: 1
+        proveedorId:
+          type: integer
+          format: int64
+          description: ID del proveedor
+          example: 1
+        proveedorNombre:
+          type: string
+          description: Nombre del proveedor
+          example: Proveedor ABC
+        notes:
+          type: string
+          description: Notas adicionales
+          example: Factura de prueba
+        items:
+          type: array
+          description: Lista de items de la factura
+          items:
+            $ref: '#/components/schemas/Item'
+        subtotal:
+          type: number
+          format: decimal
+          description: Subtotal de la factura
+          example: 100.00
+        total:
+          type: number
+          format: decimal
+          description: Total de la factura con IVA
+          example: 112.00
+        createdAt:
+          type: string
+          format: date-time
+          description: Fecha de creación de la factura
+          example: "2024-01-15T10:30:00"
+
+    Item:
+      type: object
+      required:
+        - title
+        - price
+      properties:
+        title:
+          type: string
+          description: Título del item
+          example: Producto XYZ
+        price:
+          type: number
+          format: decimal
+          description: Precio del item
+          example: 50.00
+          minimum: 0
+
+    CreateProveedorRequest:
+      type: object
+      required:
+        - nombre
+      properties:
+        nombre:
+          type: string
+          description: Nombre del proveedor
+          example: Proveedor ABC
+          minLength: 1
+        email:
+          type: string
+          format: email
+          description: Email del proveedor (debe ser único si se proporciona)
+          example: proveedor@example.com
+
+    ProveedorResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID del proveedor
+          example: 1
+        nombre:
+          type: string
+          description: Nombre del proveedor
+          example: Proveedor ABC
+        email:
+          type: string
+          format: email
+          description: Email del proveedor
+          example: proveedor@example.com
+        createdAt:
+          type: string
+          format: date-time
+          description: Fecha de creación del proveedor
+          example: "2024-01-15T10:30:00"
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensaje de error
+          example: Error de validación
+        timestamp:
+          type: string
+          format: date-time
+          description: Fecha y hora del error
+          example: "2024-01-15T10:30:00"
+
